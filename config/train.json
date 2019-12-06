@@ -1,0 +1,70 @@
+{
+    "determinism": {
+        "benchmark_algorithms": true,
+        "state": false
+    }, 
+
+    "Generator": {
+        "network_config": {
+            "input_nc": 3,
+            "output_nc": 3,
+            "nf": 64,
+            "num_resblocks": 16,
+            "upscale_factor": 4,
+            "norm_type": "batch",
+            "act_type": "prelu",
+            "init_weights": true,
+            "weights_init": {
+                "conv": "Normal",
+                "batch_norm": "Normal",
+                "linear": "Normal"
+            },
+            "optimizer_parameters": {
+                "optimizer": "Adam",
+                "lr": 1e-4,
+                "gamma": 1e-1
+            } 
+        },
+        "train_parameters": {
+            "crop_size": 96,
+            "batch_size": 16,
+            "number_of_epochs": 40,
+            "start_epoch": 0
+        }
+    },
+
+    "Discriminator": {
+        "network_config": {
+            "input_nc": 3,
+            "nf": 64,
+            "norm_type": "batch",
+            "act_type": "lrelu",
+            "init_weights": true,
+            "weights_init": {
+                "conv": "Normal",
+                "batch_norm": "Normal",
+                "linear": "Normal"
+            },
+            "optimizer_parameters": {
+                "optimizer": "Adam",
+                "lr": 1e-4,
+                "gamma": 1e-1
+            } 
+        },
+        "train_parameters": {
+            "crop_size": 96,
+            "number_of_epochs": 8,
+            "start_epoch": 0
+        }
+    },
+
+    "VGG": {
+        "layers": 19,
+        "bn": false,
+        "pretrained": true
+    },
+
+    "train_dataset_path": "/home/bruno/Pictures/Imagenet"
+
+       
+}
