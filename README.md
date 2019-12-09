@@ -1,7 +1,7 @@
 # SRGAN
 PyTorch implementation of SRGAN
 
-This work is based on https://arxiv.org/abs/1609.04802 . It is focused in being as close as possible to the original proposition.
+This work is based on [Ledig et al.](https://arxiv.org/abs/1609.04802) It is focused in being as close as possible to the original proposition.
 For training/validation, I did use a sample of aproximately 475k images from Imagenet. For testing, I used Set5, Set14, BSD100, Urban100 and Manga109.
 
 ## 1. Training dataset:
@@ -11,7 +11,7 @@ Choose a training dataset like Imagenet, COCO or DIV2K. Just make sure to train 
 ## 2. Test datasets:
 
 I used 5 datasets to evaluate the results. The paper only uses 3 of those, so the other 2 are extra for comparing with related works. Be sure to edit /config/test.json with the path you're using for your test datasets. This path must contain 5 folders named after the datasets.
-Download the datasets in this link: 
+Download the datasets in this link: [Datasets](https://drive.google.com/file/d/1ZMakMnF7XoWGiKBivsa6zrilLFxq7529/view?usp=sharing)
 
 ## 3. Train the desired model:
 
@@ -23,8 +23,10 @@ Run the test.py file and see the PSNR and SSIM results. A series of SR images wi
 
 ## 5. Optional:
 
-SRResNet-MSE pretrained model:
-SRResNet-VGG22 pretrained model:
+SRResNet-MSE pretrained model: [SRResNet-MSE](https://drive.google.com/file/d/14jQaDPsfbKd3zOOE-xH83o2-bT1Irgje/view?usp=sharing)
+
+SRResNet-VGG22 pretrained model: [SRResNet-VGG22](https://drive.google.com/file/d/1-ZkQiAU2wSCpvuyi0Wn6B0liXCr3KW15/view?usp=sharing)
+
 SRGAN results yet to come...
 
 ## Results (x4):
