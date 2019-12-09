@@ -4,30 +4,30 @@ PyTorch implementation of SRGAN
 This work is based on https://arxiv.org/abs/1609.04802 . It is focused in being as close as possible to the original proposition.
 For training/validation, I did use a sample of aproximately 475k images from Imagenet. For testing, I used Set5, Set14, BSD100, Urban100 and Manga109.
 
-1. Training dataset:
+## 1. Training dataset:
 
 Choose a training dataset like Imagenet, COCO or DIV2K. Just make sure to train the models with aproximately a million backpropagations, as the paper suggests. For my case, it was with 40 epochs. In the future, I will code it to adapt to every dataset size. Be sure to edit /config/train.json with the path you're using for your training dataset, and make sure this path does not contain subfolders with part of the dataset.
 
-2. Test datasets:
+## 2. Test datasets:
 
 I used 5 datasets to evaluate the results. The paper only uses 3 of those, so the other 2 are extra for comparing with related works. Be sure to edit /config/test.json with the path you're using for your test datasets. This path must contain 5 folders named after the datasets.
 Download the datasets in this link: 
 
-3. Train the desired model:
+## 3. Train the desired model:
 
 Run the main.py file and chose the model you want to train and the loss you want to use. Training any model takes about 16 hours in a single GTX1070.
 
-4. Test the desired model:
+## 4. Test the desired model:
 
 Run the test.py file and see the PSNR and SSIM results. A series of SR images will be generated in the process. They will be in /results/model/loss/SRimages.
 
-5. Optional:
+## 5. Optional:
 
 SRResNet-MSE pretrained model:
 SRResNet-VGG22 pretrained model:
 SRGAN results yet to come...
 
-Results (x4):
+## Results (x4):
 
 Results in brackets are reported from the authors. NR stands for "not reported".
 
