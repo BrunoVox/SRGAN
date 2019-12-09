@@ -19,7 +19,7 @@ Run the main.py file and chose the model you want to train and the loss you want
 
 ## 4. Test the desired model:
 
-Run the test.py file and see the PSNR and SSIM results. A series of SR images will be generated in the process. They will be in /results/model/loss/SRimages.
+Run the test.py file and see the PSNR and SSIM results. A series of SR images will be generated in the process. They will be in /results/"model"/"loss"/SRimages.
 
 ## 5. Optional:
 
@@ -28,6 +28,8 @@ SRResNet-MSE pretrained model: [SRResNet-MSE](https://drive.google.com/file/d/14
 SRResNet-VGG22 pretrained model: [SRResNet-VGG22](https://drive.google.com/file/d/1-ZkQiAU2wSCpvuyi0Wn6B0liXCr3KW15/view?usp=sharing)
 
 SRGAN results yet to come...
+
+To use the pretrained models, just paste them at /results/"model"/"loss"/
 
 ## Results (x4):
 
