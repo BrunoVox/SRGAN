@@ -272,7 +272,10 @@ def train(model_name, loss_function, opt):
             actual_batch_size
         )
 
-        epoch_loss = results_by_epoch['vLoss'][-1]
+        if model_name == 'SRResNet':
+            epoch_loss = results_by_epoch['vLoss'][-1]
+        elif model_name == 'SRGAN':
+            epoch_loss = results_by_epoch['vGenLoss'][-1]
         if best_loss is None or epoch_loss <= best_loss:
             best_model = True
             best_loss = epoch_loss
