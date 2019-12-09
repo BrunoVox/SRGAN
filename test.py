@@ -1,6 +1,6 @@
 import torch
 from tqdm import tqdm
-from utils import data_parallel
+import utils
 from data.dataset_loaders import TestDataloader
 import models.Generator as g
 import os
@@ -13,8 +13,9 @@ from skimage.io import imread, imsave
 import numpy as np 
 from skimage import img_as_uint
 from torchvision.utils import save_image
+from config.options import parse
 
-def test(model, upFactor):
+def test(model, up_factor, options, model_name, loss_function):
     model.eval()
     ngpu = torch.cuda.device_count()
     device = torch.device('cuda' if (torch.cuda.is_available() and ngpu > 0) else 'cpu')
@@ -27,23 +28,25 @@ def test(model, upFactor):
         'Manga109'
     ]
 
+    cwd = os.getcwd()
+
     save_dict = {
-        'Set5': '/home/bruno/Documents/Mestrado/SRGAN/results/SRResNet/VGG22/SRimages/Set5',
-        'Set14': '/home/bruno/Documents/Mestrado/SRGAN/results/SRResNet/VGG22/SRimages/Set14',
-        'BSD100': '/home/bruno/Documents/Mestrado/SRGAN/results/SRResNet/VGG22/SRimages/BSD100',
-        'Urban100': '/home/bruno/Documents/Mestrado/SRGAN/results/SRResNet/VGG22/SRimages/Urban100',
-        'Manga109': '/home/bruno/Documents/Mestrado/SRGAN/results/SRResNet/VGG22/SRimages/Manga109',
+        'Set5': f'{cwd}/results/{model_name}/{loss_function}/SRimages/Set5',
+        'Set14': f'{cwd}/results/{model_name}/{loss_function}/SRimages/Set14',
+        'BSD100': f'{cwd}/results/{model_name}/{loss_function}/SRimages/BSD100',
+        'Urban100': f'{cwd}/results/{model_name}/{loss_function}/SRimages/Urban100',
+        'Manga109': f'{cwd}/results/{model_name}/{loss_function}/SRimages/Manga109',
     }
 
-    Set5_dir = "/home/bruno/Pictures/Set5"
+    Set5_dir = f"{options['test_dataset_root']}/Set5"
     Set5_paths = [join(Set5_dir, x) for x in listdir(Set5_dir) if is_image_file(x)]
-    Set14_dir = "/home/bruno/Pictures/Set14"
+    Set14_dir = f"{options['test_dataset_root']}/Set14"
     Set14_paths = [join(Set14_dir, x) for x in listdir(Set14_dir) if is_image_file(x)]
-    BSD100_dir = "/home/bruno/Pictures/BSD100"
+    BSD100_dir = f"{options['test_dataset_root']}/BSD100"
     BSD100_paths = [join(BSD100_dir, x) for x in listdir(BSD100_dir) if is_image_file(x)]
-    Urban100_dir = "/home/bruno/Pictures/Urban100"
+    Urban100_dir = f"{options['test_dataset_root']}/Urban100"
     Urban100_paths = [join(Urban100_dir, x) for x in listdir(Urban100_dir) if is_image_file(x)]
-    Manga109_dir = "/home/bruno/Pictures/Manga109"
+    Manga109_dir = f"{options['test_dataset_root']}/Manga109"
     Manga109_paths = [join(Manga109_dir, x) for x in listdir(Manga109_dir) if is_image_file(x)]
 
     results = {
@@ -63,23 +66,23 @@ def test(model, upFactor):
     testLoaders = {
         'Set5': TestDataloader(
             Set5_paths,
-            upscale_factor=upFactor
+            upscale_factor=up_factor
         ),
         'Set14': TestDataloader(
             Set14_paths,
-            upscale_factor=upFactor
+            upscale_factor=up_factor
         ),
         'BSD100': TestDataloader(
             BSD100_paths,
-            upscale_factor=upFactor
+            upscale_factor=up_factor
         ),
         'Urban100': TestDataloader(
             Urban100_paths,
-            upscale_factor=upFactor
+            upscale_factor=up_factor
         ),
         'Manga109': TestDataloader(
             Manga109_paths,
-            upscale_factor=upFactor
+            upscale_factor=up_factor
         )
     }
     
@@ -94,8 +97,8 @@ def test(model, upFactor):
             batchSize = LRimage.size(0)
             results['batchSize'].append(batchSize)
 
-            LRimage = data_parallel(LRimage, device, ngpu)
-            HRimage = data_parallel(HRimage, device, ngpu)
+            LRimage = utils.data_parallel(LRimage, device, ngpu)
+            HRimage = utils.data_parallel(HRimage, device, ngpu)
 
             with torch.set_grad_enabled(False):
                 SRimage = model(LRimage)
@@ -115,6 +118,9 @@ def test(model, upFactor):
                 desc=f"{dataset} PSNR -> {sum(results[f'{dataset}_PSNR']) / len(results[f'{dataset}_PSNR']):.2f} - SSIM -> {sum(results[f'{dataset}_SSIM']) / len(results[f'{dataset}_SSIM']):.4f}"
             )            
 
+test_file = 'config/test.json'
+opt = parse(test_file)
+
 ngpu = torch.cuda.device_count()
 device = torch.device('cuda' if (torch.cuda.is_available() and ngpu > 0) else 'cpu')
 model = g.Generator(
@@ -125,9 +131,13 @@ model = g.Generator(
     upscale_factor=4,
     norm_type='batch',
     act_type='prelu',
-    init_weights=True
+    init_weights=False
 )
-model = data_parallel(model, device, ngpu)
-model.load_state_dict(torch.load('results/SRResNet/VGG22/best_gen.tar')['model_gen_state_dict'])
-
-test(model, 4)
+model = utils.data_parallel(model, device, ngpu)
+model_name, loss_function = utils.config('test')
+path = f'results/{model_name}/{loss_function}/best_gen.tar'
+if os.path.isfile(path):
+    model.load_state_dict(torch.load(f'results/{model_name}/{loss_function}/best_gen.tar')['model_gen_state_dict'])
+    test(model, 4, opt, model_name, loss_function)
+else:
+    print('Model/loss does not exist.')

@@ -49,8 +49,8 @@ class VGG(nn.Module):
                 param.requires_grad = False
         self.model = model
 
-        mean = torch.Tensor([0.485 * 2 - 1, 0.456 * 2 - 1, 0.406 * 2 - 1]).view(1,3,1,1)
-        std = torch.Tensor([0.229 * 2, 0.224 * 2, 0.225 * 2]).view(1,3,1,1)
+        mean = torch.Tensor([-0.03, -0.088, -0.188]).view(1,3,1,1)
+        std = torch.Tensor([0.458, 0.448, 0.45]).view(1,3,1,1)
         self.register_buffer('mean', mean)
         self.register_buffer('std', std)
 

@@ -5,21 +5,21 @@ import copy
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def training_config():
+def config(mode):
     choices_net = ['1', 'SRResNet', '2', 'SRGAN']
-    model_to_train = input('Which model would you like to train? Choices: [[1, SRResNet], [2, SRRGAN]]\n')
+    model_to_train = input(f'Which model would you like to {mode}? Choices: [[1, SRResNet], [2, SRRGAN]]\n')
     while model_to_train not in choices_net:
         model_to_train = input('Invalid choice. Try again.\n')
 
     if model_to_train in ['1', 'SRResNet']:
         choices_lgen = ['1', 'MSE', '2', 'VGG22']
         choices_lgan = ['1', 'MSE', '2', 'VGG22', '3', 'VGG54']
-        loss_function = input('Which loss are you using to train this model? Choices: [[1, MSE], [2, VGG22]]\n')
+        loss_function = input(f'Which loss are you using to {mode} this model? Choices: [[1, MSE], [2, VGG22]]\n')
         while loss_function not in choices_lgen:
             loss_function = input('Invalid choice. Try again.\n')
     elif model_to_train in ['2', 'SRGAN']:
         choices_lgan = ['1', 'MSE', '2', 'VGG22', '3', 'VGG54']
-        loss_function = input('Which loss are you using to train this model? Choices: [[1, MSE], [2, VGG22], [3, VGG54]]\n')
+        loss_function = input(f'Which loss are you using to {mode} this model? Choices: [[1, MSE], [2, VGG22], [3, VGG54]]\n')
         while loss_function not in choices_lgan:
             loss_function = input('Invalid choice. Try again.\n')
 

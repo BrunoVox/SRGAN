@@ -131,7 +131,7 @@ def train(model_name, loss_function, opt):
                 if loss_function != 'MSE':
                     SRfeat = model_feat.forward(SRimg)
                     HRfeat = model_feat.forward(HRimg)
-                    loss_g = perceptual_loss(SRfeat, HRfeat) + tv_loss(SRfeat, 2e-8)
+                    loss_g = perceptual_loss(SRfeat, HRfeat) + tv_loss(SRimg, 2e-8)
                 else:
                     loss_g = perceptual_loss(SRimg, HRimg)
                 loss_g.backward()
