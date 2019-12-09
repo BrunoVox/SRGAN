@@ -15,7 +15,7 @@ class Discriminator(nn.Module):
                 act_type=act_type
             ),
             sm.Conv2dBlock(
-                input_nc=input_nc,
+                input_nc=nf,
                 output_nc=nf,
                 kernel_size=3,
                 stride=2,
@@ -58,8 +58,8 @@ class Discriminator(nn.Module):
             self._initialize_weights()
 
     def forward(self, x):
-        x = self.features(x).flatten(1)
-        x = self.classifier(x)
+        x = self.features(x).flatten(start_dim=1)
+        x = self.classifier(x).flatten()
         return x
 
     def _initialize_weights(self):

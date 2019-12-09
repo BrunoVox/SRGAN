@@ -153,12 +153,13 @@ def progress_bar_SRResNet(results, loss, psnr, epoch, num_epochs, batch_size, ac
             desc=f'{epoch_progress} Val Loss -> {val_loss} - Val PSNR -> {val_psnr}'
         )
 
-def progress_bar_SRGAN(results, loss_g, loss_d, d_output_real, d_output_fake, psnr, epoch, num_epochs, batch_size, actual_batch_size, bar, train):
+def progress_bar_SRGAN(results, loss_g, loss_d, d_output_real, d_output_fake_before, d_output_fake_after, psnr, epoch, num_epochs, batch_size, actual_batch_size, bar, train):
     if train:
         results['tGenLoss'].append(loss_g.item() * actual_batch_size)
         results['tDiscLoss'].append(loss_d.item() * actual_batch_size)
         results['tDiscReal'].append(d_output_real.mean().item() * actual_batch_size)
-        results['tDiscFakeAfter'].append(d_output_fake.mean().item() * actual_batch_size)                
+        results['tDiscFakeBefore'].append(d_output_fake_before.mean().item() * actual_batch_size)  
+        results['tDiscFakeAfter'].append(d_output_fake_after.mean().item() * actual_batch_size)                
         results['tPSNR'].append(psnr.item() * actual_batch_size)
 
         epochProgress = f'[{epoch:03d}/{num_epochs:03d}]'
@@ -175,7 +176,7 @@ def progress_bar_SRGAN(results, loss_g, loss_d, d_output_real, d_output_fake, ps
         results['vGenLoss'].append(loss_g.item() * actual_batch_size)
         results['vDiscLoss'].append(loss_d.item() * actual_batch_size)
         results['vDiscReal'].append(d_output_real.mean().item() * actual_batch_size)
-        results['vDiscFake'].append(d_output_fake.mean().item() * actual_batch_size)                
+        results['vDiscFake'].append(d_output_fake_before.mean().item() * actual_batch_size)                
         results['vPSNR'].append(psnr.item() * actual_batch_size)
 
         epochProgress = f'[{epoch:03d}/{num_epochs:03d}]'
@@ -278,7 +279,7 @@ def show_image(tensor):
     plt.imshow((tensor * 0.5 + 0.5).permute(1, 2, 0).cpu().detach().numpy(), cmap='hsv')
     plt.show()
 
-def load_gen(model_name, loss_function, model):
-    checkpoint = torch.load(f'results/{model_name}/{loss_function}/best_gen.tar')
+def load_gen(model):
+    checkpoint = torch.load(f'results/SRResNet/MSE/best_gen.tar')
     model.load_state_dict(checkpoint['model_gen_state_dict'])
     return model

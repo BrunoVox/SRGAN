@@ -37,7 +37,7 @@ def train(model_name, loss_function, opt):
         loss_d = None
 
     elif model_name == 'SRGAN':
-        model_generator = utils.load_gen(model_name, loss_function, model_generator)
+        model_generator = utils.load_gen(model_generator)
         import models.Discriminator as d
         num_epochs = opt['Discriminator']['train_parameters']['number_of_epochs']
         start_epoch = opt['Discriminator']['train_parameters']['start_epoch']
@@ -116,8 +116,8 @@ def train(model_name, loss_function, opt):
         batch_size = opt['Generator']['train_parameters']['batch_size']
         if model_name == 'SRGAN':
             model_discriminator.train()            
-            label_real = torch.ones(batch_size)
-            label_fake = torch.zeros(batch_size)
+            label_real = utils.data_parallel(torch.ones(batch_size), device, ngpu)
+            label_fake = utils.data_parallel(torch.zeros(batch_size), device, ngpu)
         for LRimg, HRimg in train_bar:
             actual_batch_size = LRimg.size(0)
             if actual_batch_size != batch_size and model_name == 'SRGAN':
@@ -150,14 +150,13 @@ def train(model_name, loss_function, opt):
                     train=True
                 )
             elif model_name == 'SRGAN':
-                d_output_real = model_discriminator(HRimg)
+                d_output_real = model_discriminator.forward(HRimg)
                 optim_discriminator.zero_grad()
                 loss_d_real = adversarial_loss(d_output_real, label_real)
                 loss_d_real.backward()
 
                 SRimg = model_generator.forward(LRimg)
-                d_output_fake_before = model_discriminator(SRimg)
-                optim_discriminator.zero_grad()
+                d_output_fake_before = model_discriminator.forward(SRimg)
                 loss_d_fake = adversarial_loss(d_output_fake_before, label_fake)
                 loss_d_fake.backward()
                 optim_discriminator.step()
@@ -167,7 +166,8 @@ def train(model_name, loss_function, opt):
                 loss_d = loss_d_real + loss_d_fake
 
                 optim_generator.zero_grad()
-                d_output_fake_after = model_discriminator(SRimg)
+                SRimg = model_generator.forward(LRimg)
+                d_output_fake_after = model_discriminator.forward(SRimg)
                 if loss_function != 'MSE':
                     SRfeat = model_feat.forward(SRimg)
                     HRfeat = model_feat.forward(HRimg)
@@ -183,6 +183,7 @@ def train(model_name, loss_function, opt):
                     loss_g, 
                     loss_d, 
                     d_output_real, 
+                    d_output_fake_before,
                     d_output_fake_after, 
                     psnr, 
                     epoch, 
@@ -196,8 +197,8 @@ def train(model_name, loss_function, opt):
         model_generator.eval()
         if model_name == 'SRGAN':
             model_discriminator.eval()
-            label_real = torch.ones(batch_size)
-            label_fake = torch.zeros(batch_size)
+            label_real = utils.data_parallel(torch.ones(batch_size), device, ngpu)
+            label_fake = utils.data_parallel(torch.zeros(batch_size), device, ngpu)
         for LRimg, HRimg in val_bar:
             actual_batch_size = LRimg.size(0)
             if actual_batch_size != batch_size and model_name == 'SRGAN':
@@ -249,6 +250,7 @@ def train(model_name, loss_function, opt):
                     loss_d, 
                     d_output_real, 
                     d_output_fake, 
+                    None,
                     psnr, 
                     epoch, 
                     num_epochs, 

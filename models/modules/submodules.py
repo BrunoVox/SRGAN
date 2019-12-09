@@ -8,7 +8,7 @@ def act(act_type, **kwargs):
     act_type = act_type.lower()
     if act_type == 'relu':
         layer = nn.ReLU(inplace=False, **kwargs)
-    elif act_type == 'leaky_relu':
+    elif act_type == 'lrelu':
         layer = nn.LeakyReLU(0.2, inplace=False, **kwargs)
     elif act_type == 'prelu':
         layer = nn.PReLU(num_parameters=64, init=0.2, **kwargs)
