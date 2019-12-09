@@ -18,19 +18,23 @@ def normalize_tensor(tensor):
     return tensor
 
 def train_lr_transform(crop_size, upscale_factor):
-    return t.Compose([
-        t.ToPILImage(),
-        t.Resize((crop_size // upscale_factor, crop_size // upscale_factor), interpolation=Image.BICUBIC),
-        t.ToTensor()
-    ])
+    return t.Compose(
+        [
+            t.ToPILImage(),
+            t.Resize((crop_size // upscale_factor, crop_size // upscale_factor), interpolation=Image.BICUBIC),
+            t.ToTensor()
+        ]
+    )
 
 def train_hr_transform(crop_size):
-    return t.Compose([
-        # ToPILImage(),
-        # Resize(crop_size, interpolation=Image.BICUBIC),
-        t.RandomCrop(crop_size),
-        t.ToTensor()
-    ])
+    return t.Compose(
+        [
+            # ToPILImage(),
+            # Resize(crop_size, interpolation=Image.BICUBIC),
+            t.RandomCrop(crop_size),
+            t.ToTensor()
+        ]
+    )
 
 def test_lr_transform(height, width, upscale_factor):
     return t.Compose(
@@ -57,7 +61,8 @@ def create_path(path):
 def generate_partitions(img_dir):
     train_file = 'data_state/train.pkl'
     val_file = 'data_state/val.pkl'
-    file_path = '/home/bruno/Documents/Mestrado/SRGAN/data/data_state/'
+    cwd = os.getcwd()
+    file_path = f'{cwd}/data/data_state'
     if os.path.isfile(train_file) and os.path.isfile(val_file):
         with open(train_file, 'rb') as f:
             img_train = pickle.load(f)
@@ -71,8 +76,8 @@ def generate_partitions(img_dir):
         img_paths_set = set(img_paths)
         img_val_set = img_paths_set - img_train_set
         img_val = list(img_val_set)
-        with open(f'{file_path}train.pkl', 'wb') as f:
+        with open(f'{file_path}/train.pkl', 'wb') as f:
             pickle.dump(img_train, f)
-        with open(f'{file_path}val.pkl', 'wb') as f:
+        with open(f'{file_path}/val.pkl', 'wb') as f:
             pickle.dump(img_val, f)
     return img_train, img_val
